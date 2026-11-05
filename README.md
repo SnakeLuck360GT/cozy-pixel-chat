@@ -8,6 +8,73 @@ No build step, no framework, and only two npm dependencies (`ws` and
 `busboy`). Data lives in SQLite through Node's built-in `node:sqlite`, so
 there's nothing to compile either.
 
+![A one-to-one chat in the Farmhouse theme, with a reply, a photo and reactions](docs/screenshots/chat.png)
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/themes.png" alt="The chat theme picker with twelve pixel-art themes"></td>
+    <td width="50%"><img src="docs/screenshots/server.png" alt="A server called game night in the Campfire theme"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/profile.png" alt="A profile card with badges, status and bio"></td>
+    <td width="50%" align="center"><img src="docs/screenshots/phone.png" alt="The same chat on a phone" width="260"></td>
+  </tr>
+</table>
+
+<sub>Everyone in the screenshots is made up.</sub>
+
+## Quick start (Docker)
+
+```sh
+git clone https://github.com/SnakeLuck360GT/cozy-pixel-chat.git
+cd cozy-pixel-chat
+docker compose up -d
+docker compose exec app chat-admin add-user yourname --owner
+```
+
+Open <http://localhost> and log in with the password it printed. Invite
+people from the admin page (`/admin`).
+
+That runs two containers: the Node server, and Caddy in front of it serving
+the pages. Locally the app is on `http://localhost` and attachments come from
+`http://127.0.0.1`, which the browser treats as a different site (see
+[below](#how-members-only-works) for why that matters).
+
+### On a real server
+
+1. Point two subdomains at the server, e.g. `chat.example.com` and
+   `chat-files.example.com`.
+2. `cp .env.example .env` and put them in `PUBLIC_URL` and `CONTENT_URL`.
+3. `docker compose up -d`. Caddy gets the HTTPS certificates by itself.
+4. Make your account: `docker compose exec app chat-admin add-user yourname --owner`
+
+Calls work without anything else when both people can connect directly. For
+everyone else (phones on mobile data, mostly) you want the relay: fill in
+the TURN lines in `.env`, open the ports listed in [Calls](#calls-and-the-turn-relay),
+and run `docker compose --profile calls up -d`.
+
+Everything (database, uploads, the signing secret) is in the `chat-data`
+volume. To update: `git pull && docker compose up -d --build`.
+
+## How it's built
+
+- **Backend:** one Node.js process (`server.js` + `lib/`) with no web
+  framework, just `node:http`. It handles the REST API, uploads (streamed
+  with busboy) and a WebSocket hub for everything live: new messages, typing,
+  presence, read receipts, and call signalling.
+- **Database:** SQLite via `node:sqlite`, in WAL mode.
+- **Frontend:** plain ES modules, no bundler, no framework. A tiny `h()`
+  helper builds the DOM. Every icon is a 12×12 pixel grid in code, the
+  stickers are drawn from strings of letters, and the theme backgrounds are
+  hand-made SVG tiles.
+- **Calls:** WebRTC in a mesh (up to 6 people), with the server only passing
+  the offers and answers along. coturn relays when a direct connection fails,
+  using short-lived HMAC logins so no TURN passwords are stored anywhere.
+- **Security:** attachments live on a separate origin with no cookies and
+  HMAC-signed, expiring links. File types are sniffed from their bytes.
+  Strict CSP. scrypt password hashes. Login rate limiting. Origin checks on
+  every write and on the WebSocket.
+
 ## What it does
 
 - Messages update live, with replies, reactions (double-tap or double-click
