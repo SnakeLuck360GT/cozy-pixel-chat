@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en" data-theme="farmhouse">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6d79c">
+<link rel="icon" href="/favicon.ico" sizes="16x16">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-icon.png">
+<link rel="preload" href="/vendor/pixelify-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/vendor/silkscreen-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="/js/boot.js"></script>
+<link rel="stylesheet" href="/style.css">
+<title>Terms · chat</title>
+<script type="module" src="/js/terms.js"></script>
+</head>
+<!--
+  These are template terms written for a small invite-only server in the UK.
+  Before you run this for real: change the contact email in section 9, check
+  the governing law in section 13, and bump TERMS_VERSION in server.js so
+  everyone accepts the new version. Not legal advice!
+-->
+<body>
+<main class="page">
+  <article class="doc window">
+    <header class="window-title"><h2>Terms of use</h2><a class="btn plain" href="/">Back to chat</a></header>
+    <div class="window-body">
+      <p class="dim">Version 2026-11-03. By signing up, logging in or sending anything, you agree to these terms.</p>
+
+      <form id="accept" class="callout" hidden>
+        <strong>Please read and accept these terms before you send anything.</strong>
+        <label class="check"><input type="checkbox" id="agree" required><span>I've read these terms and agree to them, including that I'm responsible for everything I send.</span></label>
+        <p class="status error" id="accept-status" role="status"></p>
+        <div class="actions"><button class="btn" type="submit">I agree</button></div>
+      </form>
+
+      <h3>1. What this is</h3>
+      <p>This is a small, private, invite-only chat app run by the person who manages this server ("I", "me"). It's free, a personal project, and only for people I've invited. "You" means anyone with an account.</p>
+
+      <h3>2. Your account</h3>
+      <ul>
+        <li>Keep your password secret. You're responsible for everything done with your account.</li>
+        <li>Tell me straight away if you think someone else has access to your account.</li>
+        <li>Don't share your account or pass invite codes to people you don't trust.</li>
+      </ul>
+
+      <h3>3. What you send is your responsibility</h3>
+      <p>You keep ownership of your messages, photos, files and voice notes. You give me permission to store them and deliver them to the people in the chat you sent them to, which is needed for the app to work.</p>
+      <p class="callout">You are solely and fully responsible, and legally liable, for everything you send, and for what happens as a result. By sending something, you confirm you have every right to send it and that it doesn't break any law or these terms.</p>
+
+      <h3>4. What you can't send or do</h3>
+      <ul>
+        <li>Anything illegal where you are or in the UK, or anything that helps someone break the law.</li>
+        <li>Child sexual abuse material of any kind. This is reported to the police and the Internet Watch Foundation immediately, along with everything I know about the account.</li>
+        <li>Intimate images of anyone shared without their consent, or content that harasses, threatens, bullies or doxxes anyone.</li>
+        <li>Content that promotes terrorism or violence, or incites hatred.</li>
+        <li>Malware, viruses, phishing links, scams, or anything made to deceive people or steal their information.</li>
+        <li>Anything that infringes someone else's copyright, trademarks or other rights.</li>
+        <li>Trying to break, overload, probe or get around the app's security or limits, or get into other people's accounts or chats.</li>
+      </ul>
+
+      <h3>5. You cover any trouble you cause</h3>
+      <p>You agree to indemnify me and hold me harmless: if anyone makes a claim, complaint, demand or legal action against me because of something you sent, or because you broke these terms or the law, you'll cover all of the resulting losses, damages, fines, costs and legal fees. You'll also help me deal with it if I ask.</p>
+
+      <h3>6. Privacy, honestly</h3>
+      <p>Messages and files are stored on my server. They're protected in transit and only shown to the people in each chat, but they aren't end-to-end encrypted, so as the person running the server I could technically see them. I don't read people's chats. I will only look at something if it's reported to me or I have good reason to think it breaks these terms or the law.</p>
+      <p>Calls go directly between your devices, or through a relay on my server when a direct connection isn't possible. They are never recorded or stored; only a short note that a call happened, and how long it lasted, appears in the chat.</p>
+
+      <h3>7. What I can do</h3>
+      <ul>
+        <li>Remove any message or file, or suspend or delete any account, at any time, for any reason or none, without warning.</li>
+        <li>Give information about your account and what you've sent to the police, courts or other authorities when the law requires it, or when I believe it's needed to deal with illegal content or protect someone.</li>
+        <li>Change, pause or shut down the app at any time.</li>
+      </ul>
+
+      <h3>8. What's stored about you</h3>
+      <p>Your username, display name and profile picture, a scrambled (hashed) copy of your password, your messages, reactions, files and voice notes, which chats you're in and how far you've read, when you were last online, and the IP address used when you signed up, accepted these terms, and uploaded each file. The IP addresses are there so abuse can be traced to whoever did it. When you unsend a message, its text and files are deleted. Everything is deleted along with your account.</p>
+
+      <h3>9. Reporting something</h3>
+      <p>If something here is illegal, harmful or infringes your rights, email <a href="mailto:admin@example.com">admin@example.com</a>. I'll review reports and remove anything that breaks these terms as quickly as I reasonably can.</p>
+
+      <h3>10. No promises</h3>
+      <p>The app is provided free, "as is" and "as available", with no warranty of any kind. It may go down, be slow, or lose messages or files at any time. Keep your own copy of anything that matters.</p>
+
+      <h3>11. Limits on my liability</h3>
+      <p>As far as the law allows, I'm not liable for any loss or damage of any kind arising from your use of the app, from what other people send, or from the app being unavailable or losing data. Nothing in these terms limits liability that can't legally be limited, like for death or personal injury caused by negligence, or for fraud.</p>
+
+      <h3>12. Changes and ending</h3>
+      <p>I may change these terms. If the change matters, you'll be asked to accept the new version before sending anything else. You can stop using the app at any time; ask me and I'll delete your account and everything you've sent. If your account is deleted, sections 3, 5, 10 and 11 still apply to what you sent.</p>
+
+      <h3>13. Law</h3>
+      <p>These terms are governed by the law of England and Wales, and any dispute goes to the courts of England and Wales.</p>
+    </div>
+  </article>
+</main>
+</body>
+</html>

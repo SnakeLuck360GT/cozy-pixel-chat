@@ -1,0 +1,12 @@
+{
+  "name": "cozy-pixel-chat",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js"
+  },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "ws": "^8.18.0"
+  }
+}

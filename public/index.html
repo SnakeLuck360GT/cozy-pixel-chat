@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en" data-theme="farmhouse">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#f6d79c">
+<title>chat</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-icon.png">
+<link rel="preload" href="/vendor/pixelify-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/vendor/silkscreen-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="/js/boot.js"></script>
+<link rel="stylesheet" href="/style.css">
+<script type="module" src="/js/app.js"></script>
+</head>
+<body class="loading">
+<div class="app" id="app">
+  <aside class="sidebar">
+    <header class="side-head">
+      <a class="brand" id="brand" href="#/">chat</a>
+      <button class="icon-btn" id="search-all" type="button" aria-label="Search all chats" title="Search all chats"></button>
+      <button class="icon-btn" id="new-chat" type="button" aria-label="New chat or server" title="New chat or server"></button>
+    </header>
+    <div class="rule"></div>
+    <ul class="conv-list" id="conv-list"></ul>
+    <div class="voice-panel" id="voice-panel" hidden></div>
+    <footer class="me-card">
+      <button class="avatar-btn" id="me-avatar" type="button" aria-label="Your profile" title="Your profile"></button>
+      <span class="who"><strong id="me-name"></strong><span id="me-handle"></span></span>
+      <button class="icon-btn" id="settings" type="button" aria-label="Settings" title="Settings"></button>
+    </footer>
+  </aside>
+
+  <main class="pane" id="pane">
+    <div class="empty-pane" id="empty-pane">
+      <div class="empty-card window">
+        <div id="empty-art"></div>
+        <p>Pick a chat on the left, or start a new one.</p>
+        <button class="btn" id="empty-new" type="button">New chat</button>
+      </div>
+    </div>
+
+    <section class="convo" id="convo" hidden>
+      <header class="convo-head" id="convo-head"></header>
+      <section class="stage" id="stage" hidden>
+        <div class="stage-head" id="stage-head" hidden></div>
+        <div class="stage-body" id="stage-body">
+          <div class="stage-watch" id="stage-watch" hidden></div>
+          <div class="stage-tiles" id="stage-tiles"></div>
+          <div class="stage-float" id="stage-float"></div>
+        </div>
+        <p class="stage-status" id="stage-status" hidden></p>
+        <div class="stage-bar" id="stage-bar"></div>
+        <div class="stage-resize" id="stage-resize" role="separator" aria-label="Drag to resize the call area" title="Drag to resize"></div>
+      </section>
+      <div class="messages" id="messages">
+        <ol class="message-list" id="message-list" aria-live="polite"></ol>
+      </div>
+      <button class="btn plain jump-down" id="jump" type="button" hidden></button>
+      <form class="composer" id="composer" autocomplete="off">
+        <div class="composer-bar" id="composer-bar" hidden></div>
+        <div class="tray" id="tray" hidden></div>
+        <div class="composer-row" id="composer-row">
+          <button class="icon-btn" id="attach" type="button" aria-label="Add photos or files" title="Add photos or files"></button>
+          <input id="file-input" type="file" multiple hidden>
+          <button class="icon-btn" id="sticker-btn" type="button" aria-label="Stickers" title="Stickers"></button>
+          <textarea class="composer-input" id="composer-input" rows="1" placeholder="Message…" aria-label="Message" enterkeyhint="send"></textarea>
+          <button class="icon-btn" id="mic" type="button" aria-label="Record a voice message" title="Record a voice message"></button>
+          <button class="icon-btn accent" id="send" type="submit" aria-label="Send" title="Send"></button>
+        </div>
+      </form>
+      <div class="drop-hint" id="drop-hint" hidden>Drop to send</div>
+    </section>
+  </main>
+</div>
+<div id="call-dock" hidden></div>
+</body>
+</html>

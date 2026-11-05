@@ -1,0 +1,60 @@
+# deploy/setup.sh writes this to /etc/caddy/sites/chat.caddy with the domains
+# filled in. Caddy gets and renews the HTTPS certificates on its own.
+#
+# Two sites on purpose. The app (login, pages, API, live updates) and the
+# attachments live on different subdomains, so an uploaded file can't read or
+# act on anyone's session. Attachments are only served for signed links,
+# which the app hands to people in the chat.
+
+# The app
+{{DOMAIN}} {
+	header {
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob: https://{{CONTENT_DOMAIN}}; media-src 'self' blob: https://{{CONTENT_DOMAIN}}; connect-src 'self' wss://{{DOMAIN}}; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+		Permissions-Policy "camera=(self), microphone=(self), geolocation=(), display-capture=(self)"
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy no-referrer
+		-Server
+	}
+
+	route {
+		# The API, uploads and the live connection (Caddy passes WebSockets through).
+		@app path /upload /api/* /ws
+		reverse_proxy @app 127.0.0.1:3002
+
+		# /login serves login.html, and so on. Browsers recheck pages and
+		# scripts on each visit, so an update shows up straight away.
+		header Cache-Control "no-cache"
+		root * /opt/chat/public
+		try_files {path} {path}.html
+		file_server
+	}
+}
+
+# Attachments: a 16-character key, only with a valid signature (the app
+# checks it and sets the type, so only plain pictures, video and audio open
+# in the browser; everything else downloads).
+{{CONTENT_DOMAIN}} {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		Referrer-Policy no-referrer
+		-Server
+	}
+
+	@icons path /favicon.ico /icon.svg /apple-icon.png
+	handle @icons {
+		root * /opt/chat/public
+		file_server
+	}
+
+	@stored path_regexp ^/[a-z0-9]{16}$
+	handle @stored {
+		rewrite * /files{path}?{query}
+		reverse_proxy 127.0.0.1:3002
+	}
+
+	handle {
+		respond 404
+	}
+}

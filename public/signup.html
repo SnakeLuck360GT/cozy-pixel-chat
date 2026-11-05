@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-theme="farmhouse">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6d79c">
+<link rel="icon" href="/favicon.ico" sizes="16x16">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-icon.png">
+<link rel="preload" href="/vendor/pixelify-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/vendor/silkscreen-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="/js/boot.js"></script>
+<link rel="stylesheet" href="/style.css">
+<title>Sign up · chat</title>
+<script type="module" src="/js/signup.js"></script>
+</head>
+<body>
+<main class="page">
+  <div class="auth-box">
+    <div class="window">
+      <header class="window-title"><h2>Sign up</h2></header>
+      <div class="window-body">
+        <div class="auth-art" id="art"></div>
+        <p>You need an invite code from whoever runs this chat.</p>
+        <form id="signup">
+          <label class="field"><span>Invite code</span><input id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD-EFGH-JKMN" required></label>
+          <label class="field"><span>Username</span><input id="username" autocomplete="username" autocapitalize="none" spellcheck="false" required><small>2 to 32 letters, numbers, - or _</small></label>
+          <label class="field"><span>Password</span><input id="password" type="password" autocomplete="new-password" minlength="8" required><small>At least 8 characters</small></label>
+          <label class="check"><input type="checkbox" id="terms" required><span>I've read the <a href="/terms" target="_blank">terms</a> and agree to them, including that I'm responsible for everything I send.</span></label>
+          <p class="status error" id="status" role="alert"></p>
+          <button class="btn block" type="submit">Create account</button>
+        </form>
+      </div>
+    </div>
+    <p class="auth-foot">Already have an account? <a href="/login">Log in</a></p>
+  </div>
+</main>
+</body>
+</html>

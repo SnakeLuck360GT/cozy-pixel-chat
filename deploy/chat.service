@@ -1,0 +1,20 @@
+[Unit]
+Description=chat server
+After=network.target
+
+[Service]
+User=chat
+WorkingDirectory=/opt/chat
+EnvironmentFile=/etc/chat.env
+ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning server.js
+Restart=always
+UMask=0077
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/chat
+
+[Install]
+WantedBy=multi-user.target

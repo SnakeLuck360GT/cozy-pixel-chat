@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" data-theme="farmhouse">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6d79c">
+<link rel="icon" href="/favicon.ico" sizes="16x16">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-icon.png">
+<link rel="preload" href="/vendor/pixelify-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/vendor/silkscreen-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="/js/boot.js"></script>
+<link rel="stylesheet" href="/style.css">
+<title>Admin · chat</title>
+<script type="module" src="/js/admin.js"></script>
+</head>
+<body class="loading">
+<main class="admin">
+  <header class="admin-head"><a class="brand" id="brand" href="/">chat admin</a><a class="btn plain" href="/">Back to chat</a></header>
+
+  <section class="window">
+    <header class="window-title"><h2>Overview</h2></header>
+    <div class="window-body"><div class="stats" id="stats"></div></div>
+  </section>
+
+  <section class="window">
+    <header class="window-title"><h2>Server</h2></header>
+    <div class="window-body">
+      <p class="dim">The machine this runs on, updated every few seconds.</p>
+      <div class="meters" id="meters"></div>
+      <div class="stats-panel wide" id="system"></div>
+    </div>
+  </section>
+
+  <section class="window">
+    <header class="window-title"><h2>Invite codes</h2></header>
+    <div class="window-body">
+      <p class="dim">Each code lets someone make their own account. Send them the sign-up link.</p>
+      <form class="inline-form" id="invite-form">
+        <label class="field"><span>Uses</span><input id="invite-uses" type="number" min="1" max="1000" value="1" required></label>
+        <label class="field"><span>Expires in days</span><input id="invite-days" type="number" min="1" max="3650" value="7" placeholder="Never"></label>
+        <button class="btn" type="submit">Make a code</button>
+      </form>
+      <div id="new-invite"></div>
+      <div class="table-wrap"><table id="invites"></table></div>
+    </div>
+  </section>
+
+  <section class="window">
+    <header class="window-title"><h2>Accounts</h2></header>
+    <div class="window-body">
+      <form class="inline-form" id="user-form">
+        <label class="field"><span>New username</span><input id="user-name" autocapitalize="none" spellcheck="false" required></label>
+        <label class="check" id="user-admin-wrap" hidden><input type="checkbox" id="user-admin">Admin</label>
+        <button class="btn" type="submit">Add account</button>
+      </form>
+      <div id="new-user"></div>
+      <div class="table-wrap"><table id="users"></table></div>
+    </div>
+  </section>
+
+  <section class="window">
+    <header class="window-title"><h2>Settings</h2></header>
+    <div class="window-body">
+      <form class="inline-form" id="settings-form">
+        <label class="field"><span>Max file size (MB)</span><input id="max-mb" type="number" min="1" max="2000" required></label>
+        <button class="btn" type="submit">Save</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="window" id="uploads-section" hidden>
+    <header class="window-title"><h2>Recent uploads</h2></header>
+    <div class="window-body">
+      <p class="dim">Owner only. The address each file was uploaded from, for tracing abuse.</p>
+      <div class="table-wrap"><table id="uploads"></table></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
