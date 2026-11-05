@@ -1,4 +1,4 @@
-<p align="center"><i>Stardew Valley Inspired Cozy Chat with WebRTC calling</i></p>
+<p align="center"><i>stardew valley inspired cozy chat</i></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/node.js-22.13+-a8d672?style=flat-square&logo=nodedotjs&logoColor=fff8ec&labelColor=7c4a26" alt="node.js 22.13+">
