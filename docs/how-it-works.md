@@ -98,4 +98,4 @@ tables are `users`, `sessions`, `invites`, `conversations`, `members`,
 plain es modules, served as they are, with no bundler. a tiny `h()` helper
 builds the page. every icon is a 12×12 pixel grid written in code, the
 stickers are drawn from strings of letters, and each theme is a handful of
-css colours plus a tiny svg tile
+css colours plus a tiny svg tile.
