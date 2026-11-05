@@ -37,6 +37,48 @@ services:
       - caddy-data:/data
       - caddy-config:/config
 
+  # The call relay, for when two people can't connect directly (mobile data,
+  # strict wifi). Off by default: docker compose --profile calls up -d
+  # Needs UDP 3478, TCP 3478 and UDP 49160-49200 open on the server and in
+  # your cloud provider's firewall. Host networking because Docker is slow at
+  # mapping big port ranges, and coturn wants to see the real addresses.
+  coturn:
+    image: coturn/coturn:4.6-alpine
+    restart: unless-stopped
+    profiles: ["calls"]
+    network_mode: host
+    command:
+      - -n
+      - --listening-port=3478
+      - --min-port=49160
+      - --max-port=49200
+      - --realm=${TURN_REALM:-chat}
+      - --use-auth-secret
+      - --static-auth-secret=${TURN_SECRET:-}
+      - --external-ip=$$(detect-external-ip)
+      - --fingerprint
+      - --no-cli
+      - --no-tls
+      - --no-dtls
+      - --no-multicast-peers
+      - --user-quota=12
+      - --total-quota=60
+      - --stale-nonce=600
+      - --log-file=stdout
+      # Never relay into the server itself or private networks behind it.
+      - --denied-peer-ip=0.0.0.0-0.255.255.255
+      - --denied-peer-ip=10.0.0.0-10.255.255.255
+      - --denied-peer-ip=100.64.0.0-100.127.255.255
+      - --denied-peer-ip=127.0.0.0-127.255.255.255
+      - --denied-peer-ip=169.254.0.0-169.254.255.255
+      - --denied-peer-ip=172.16.0.0-172.31.255.255
+      - --denied-peer-ip=192.0.0.0-192.0.0.255
+      - --denied-peer-ip=192.168.0.0-192.168.255.255
+      - --denied-peer-ip=198.18.0.0-198.19.255.255
+      - --denied-peer-ip=::1
+      - --denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+      - --denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+
 volumes:
   chat-data:
   caddy-data:
