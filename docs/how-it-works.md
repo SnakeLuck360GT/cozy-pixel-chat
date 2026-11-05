@@ -1,6 +1,6 @@
-<p align="center"><i>a little peek at how the garden grows 🌿</i></p>
+<p align="center"><i>a little peek at how the garden grows</i></p>
 
-## 🌳 the big picture
+## the big picture
 
 ```mermaid
 flowchart LR
@@ -18,7 +18,7 @@ one node process does everything: the api, uploads, live updates and handing
 out attachments. caddy sits in front to do https and serve the pages. no
 frameworks anywhere, just node's own `http` module and plain js in the browser.
 
-## 🏡 two little houses
+## two little houses
 
 the app and the attachments live on different subdomains. that way an
 uploaded file, even a sneaky html or svg one, can never pretend to be the app
@@ -33,7 +33,7 @@ file types come from the first few bytes of the file, never its name or what
 the browser claims. only plain pictures, video and audio open in the browser.
 everything else just downloads.
 
-## ✨ live updates
+## live updates
 
 every open tab keeps one websocket (`lib/live.js`). it logs in with the
 session cookie and has to come from the app's own origin, because other
@@ -44,7 +44,7 @@ who's online and theme changes to everyone in that chat. each message you
 send carries a `nonce`, so the copy that appears instantly gets swapped for
 the real one when it lands.
 
-## ☎️ calls
+## calls
 
 each chat can have one call, kept as a little room in memory
 (`lib/calls.js`). starting one rings everyone else for 45 seconds. anyone can
@@ -60,7 +60,7 @@ when two people can't reach each other directly (hi, mobile data), coturn
 relays the call. the server gives out TURN logins that expire, made with an
 HMAC of a secret it shares with coturn, so no TURN passwords are stored.
 
-## 🍿 watching together
+## watching together
 
 `/watch <link>` keeps the video, its position and whether it's playing in
 memory for that chat, and tells everyone when it changes. each person's app
@@ -68,22 +68,22 @@ works out where the video should be using the server's clock, so you all stay
 in step. the player is the youtube-nocookie.com embed, steered with
 `postMessage`, so youtube's scripts never run inside the app.
 
-## 📷 uploads
+## uploads
 
 photos get shrunk on a canvas in the browser before they're sent, and
 redrawing jpegs strips out their location data too. uploads stream to disk
 through busboy with a size limit and get a random 16-character name.
 
 once an hour, a little sweep tidies up: files that were uploaded but never
-sent (after a day), expired sessions and old invites. 🧹
+sent (after a day), expired sessions and old invites.
 
-## 🪴 data
+## data
 
 sqlite through `node:sqlite` in WAL mode, so there's nothing to compile. the
 tables are `users`, `sessions`, `invites`, `conversations`, `members`,
 `messages`, `attachments`, `reactions`, `stickers` and `settings`.
 
-## 🔒 keeping it safe
+## keeping it safe
 
 - passwords are hashed with scrypt
 - session tokens and invite codes are only stored as hashes
@@ -93,9 +93,9 @@ tables are `users`, `sessions`, `invites`, `conversations`, `members`,
   a wrong password, so timing can't tell anyone which usernames exist
 - api writes only accept json, and check where the request came from
 
-## 🎨 the pretty bits
+## the pretty bits
 
 plain es modules, served as they are, with no bundler. a tiny `h()` helper
 builds the page. every icon is a 12×12 pixel grid written in code, the
 stickers are drawn from strings of letters, and each theme is a handful of
-css colours plus a tiny svg tile 🌸
+css colours plus a tiny svg tile
