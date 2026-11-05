@@ -130,3 +130,9 @@ origin on :8081.
 - `manage.js`: command-line account tool.
 - `deploy/`: the Caddy config, the systemd service and the setup script.
 - `dev/proxy.js`: a stand-in for Caddy when running locally.
+
+## License
+
+MIT, see [LICENSE](LICENSE). The bundled fonts (Silkscreen and Pixelify
+Sans) are under the SIL Open Font License; their licenses are in
+`public/vendor/`.

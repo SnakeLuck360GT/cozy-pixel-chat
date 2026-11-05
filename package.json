@@ -1,6 +1,7 @@
 {
   "name": "cozy-pixel-chat",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning server.js"
