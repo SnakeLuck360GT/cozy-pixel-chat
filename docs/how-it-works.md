@@ -1,101 +1,124 @@
-<p align="center"><i>a little peek at how the garden grows</i></p>
-
-## the big picture
+## Overview
 
 ```mermaid
 flowchart LR
-  B[your browser] -->|pages, /api, /upload, /ws| C1[caddy<br>chat.example.com]
-  B -->|signed file links| C2[caddy<br>chat-files.example.com]
-  C1 --> N[node server]
+  B[Browser] -->|pages, /api, /upload, /ws| C1[Caddy<br>chat.example.com]
+  B -->|signed file links| C2[Caddy<br>chat-files.example.com]
+  C1 --> N[Node server]
   C2 --> N
-  N --- DB[(sqlite)]
+  N --- DB[(SQLite)]
   N --- F[(files/)]
-  B <-.->|webrtc| B2[friends' browsers]
-  B <-.->|if direct fails| T[coturn]
+  B <-.->|WebRTC| B2[Other browsers]
+  B <-.->|relay if needed| T[coturn]
 ```
 
-one node process does everything: the api, uploads, live updates and handing
-out attachments. caddy sits in front to do https and serve the pages. no
-frameworks anywhere, just node's own `http` module and plain js in the browser.
+- One Node process: API, uploads, WebSocket hub, attachment server
+- Caddy: HTTPS, static pages, reverse proxy
+- No framework on either side: `node:http` + plain ES modules
 
-## two little houses
+## Attachments on a second origin
 
-the app and the attachments live on different subdomains. that way an
-uploaded file, even a sneaky html or svg one, can never pretend to be the app
-or peek at anyone's login.
+```mermaid
+sequenceDiagram
+  participant B as Browser
+  participant A as chat.example.com
+  participant F as chat-files.example.com
+  B->>A: GET /api/conversations/1/messages (cookie)
+  A-->>B: messages + /key?e=expiry&s=hmac
+  B->>F: GET /key?e=...&s=... (no cookie)
+  F->>F: check HMAC + expiry
+  F-->>B: file (inline only if image/video/audio)
+```
 
-the files house has no cookies, so it can't tell who's knocking. instead the
-app hands out links like `/<key>?e=<expiry>&s=<hmac>`, and the server checks
-the signature and the expiry before letting anything out. links last about a
-day, and the expiry is rounded to the hour so browsers can cache them.
+- Uploaded files can never run as the app or read the session cookie
+- Links are HMAC-signed and expire after ~24h (rounded to the hour for caching)
+- File type is sniffed from the first bytes, not the name or browser's claim
+- Anything that isn't plain image/video/audio is forced to download
 
-file types come from the first few bytes of the file, never its name or what
-the browser claims. only plain pictures, video and audio open in the browser.
-everything else just downloads.
+## Messages
 
-## live updates
+```mermaid
+sequenceDiagram
+  participant S as Sender
+  participant N as Node
+  participant O as Others in chat
+  S->>S: show message instantly (with nonce)
+  S->>N: POST /api/conversations/:id/messages {text, nonce}
+  N->>N: insert into SQLite
+  N-->>S: WS {t: "message", message, nonce}
+  N-->>O: WS {t: "message", message, nonce}
+  S->>S: swap optimistic copy for real one
+```
 
-every open tab keeps one websocket (`lib/live.js`). it logs in with the
-session cookie and has to come from the app's own origin, because other
-sites can open sockets with your cookies attached.
+- One WebSocket per tab, authenticated by the session cookie
+- Origin is checked on upgrade (other sites can open sockets with your cookies)
+- Pushes: messages, edits, reactions, typing, read markers, presence, theme changes
 
-the server sends new messages, edits, reactions, typing dots, read markers,
-who's online and theme changes to everyone in that chat. each message you
-send carries a `nonce`, so the copy that appears instantly gets swapped for
-the real one when it lands.
+## Calls
 
-## calls
+```mermaid
+sequenceDiagram
+  participant A as Alice
+  participant N as Node
+  participant B as Bob
+  A->>N: call-join
+  N-->>B: call-ring (45s)
+  B->>N: call-join
+  N-->>B: call-joined {peers: [Alice]}
+  N-->>A: call-peer-joined {Bob}
+  A->>N: call-signal (offer / ICE)
+  N-->>B: call-signal
+  B->>N: call-signal (answer / ICE)
+  N-->>A: call-signal
+  A<<->>B: audio + video (direct or via coturn)
+```
 
-each chat can have one call, kept as a little room in memory
-(`lib/calls.js`). starting one rings everyone else for 45 seconds. anyone can
-hop in, leave and come back, up to 6 people. if someone sits alone for 3
-minutes the call ends by itself.
+- One call per chat, up to 6 people, kept in memory (`lib/calls.js`)
+- Full mesh: one `RTCPeerConnection` per pair, "perfect negotiation" for mid-call changes
+- Server only relays signalling, media never touches it
+- Ends when everyone leaves, or after someone is alone for 3 minutes
+- TURN logins are short-lived HMACs of a secret shared with coturn
 
-your voice and video never touch the server. every pair of people gets their
-own `RTCPeerConnection`, using the "perfect negotiation" pattern so either
-side can change things mid-call (like turning a camera on). the server just
-passes the offers, answers and ICE candidates along the websocket.
+## Watch together
 
-when two people can't reach each other directly (hi, mobile data), coturn
-relays the call. the server gives out TURN logins that expire, made with an
-HMAC of a secret it shares with coturn, so no TURN passwords are stored.
+- `/watch <link>` stores video, position and play state per chat (in memory)
+- Changes are broadcast over the WebSocket
+- Clients use the server's clock to agree on the current position
+- youtube-nocookie.com embed, controlled with `postMessage` (no YouTube JS in the app)
 
-## watching together
+## Data
 
-`/watch <link>` keeps the video, its position and whether it's playing in
-memory for that chat, and tells everyone when it changes. each person's app
-works out where the video should be using the server's clock, so you all stay
-in step. the player is the youtube-nocookie.com embed, steered with
-`postMessage`, so youtube's scripts never run inside the app.
+```mermaid
+erDiagram
+  users ||--o{ sessions : has
+  users ||--o{ members : joins
+  conversations ||--o{ members : has
+  conversations ||--o{ messages : contains
+  users ||--o{ messages : sends
+  messages ||--o{ attachments : has
+  messages ||--o{ reactions : has
+  users ||--o{ reactions : gives
+  attachments ||--o| stickers : "used by"
+```
 
-## uploads
+- SQLite via `node:sqlite` (WAL mode), nothing to compile
+- Conversations are `dm`, `group` or `server`
+- Attachments are uploaded first and linked to a message on send
+- Hourly sweep: unsent uploads older than a day, expired sessions, old invites
 
-photos get shrunk on a canvas in the browser before they're sent, and
-redrawing jpegs strips out their location data too. uploads stream to disk
-through busboy with a size limit and get a random 16-character name.
+## Security
 
-once an hour, a little sweep tidies up: files that were uploaded but never
-sent (after a day), expired sessions and old invites.
+- Passwords: scrypt
+- Session tokens and invite codes stored only as hashes
+- `__Host-` cookie over HTTPS (files subdomain can't set or overwrite it)
+- Login rate limiting per IP; unknown usernames take as long as wrong passwords
+- API writes require JSON and a matching Origin
+- Strict CSP, `frame-ancestors 'none'`
+- Photos are resized client-side; redrawing JPEGs strips EXIF/GPS
 
-## data
+## Frontend
 
-sqlite through `node:sqlite` in WAL mode, so there's nothing to compile. the
-tables are `users`, `sessions`, `invites`, `conversations`, `members`,
-`messages`, `attachments`, `reactions`, `stickers` and `settings`.
-
-## keeping it safe
-
-- passwords are hashed with scrypt
-- session tokens and invite codes are only stored as hashes
-- over https the cookie is `__Host-` prefixed, so the files subdomain can't
-  set it or swap it out
-- failed logins are rate limited per ip, and a wrong username takes as long as
-  a wrong password, so timing can't tell anyone which usernames exist
-- api writes only accept json, and check where the request came from
-
-## the pretty bits
-
-plain es modules, served as they are, with no bundler. a tiny `h()` helper
-builds the page. every icon is a 12×12 pixel grid written in code, the
-stickers are drawn from strings of letters, and each theme is a handful of
-css colours plus a tiny svg tile.
+- Plain ES modules, no bundler
+- Tiny `h()` helper for building DOM
+- Icons are 12×12 pixel grids in code, stickers are drawn from strings
+- Themes are CSS variables + a small SVG tile
