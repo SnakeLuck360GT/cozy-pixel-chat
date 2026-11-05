@@ -1,0 +1,53 @@
+# Caddy config for docker-compose.yml. Same idea as deploy/Caddyfile, but
+# the addresses come from the environment, so one file works both locally
+# (http://localhost + http://127.0.0.1) and for real (two HTTPS subdomains).
+# With https:// addresses Caddy gets the certificates on its own.
+
+# The app: pages, API, uploads and the live connection.
+{$PUBLIC_URL} {
+	header {
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob: {$CONTENT_URL}; media-src 'self' blob: {$CONTENT_URL}; connect-src 'self'; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+		Permissions-Policy "camera=(self), microphone=(self), geolocation=(), display-capture=(self)"
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy no-referrer
+		-Server
+	}
+
+	route {
+		@app path /upload /api/* /ws
+		reverse_proxy @app app:3002
+
+		header Cache-Control "no-cache"
+		root * /srv/public
+		try_files {path} {path}.html
+		file_server
+	}
+}
+
+# Attachments: only a 16-character key with a valid signature, which the
+# app checks. No cookies ever reach this origin.
+{$CONTENT_URL} {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		Referrer-Policy no-referrer
+		-Server
+	}
+
+	@icons path /favicon.ico /icon.svg /apple-icon.png
+	handle @icons {
+		root * /srv/public
+		file_server
+	}
+
+	@stored path_regexp ^/[a-z0-9]{16}$
+	handle @stored {
+		rewrite * /files{path}?{query}
+		reverse_proxy app:3002
+	}
+
+	handle {
+		respond 404
+	}
+}

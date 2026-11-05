@@ -1,0 +1,43 @@
+# docker compose up -d
+#
+# Works as-is on http://localhost (files on http://127.0.0.1). For a real
+# server, copy .env.example to .env and fill in your two domains.
+
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost}
+      CONTENT_URL: ${CONTENT_URL:-http://127.0.0.1}
+      # Leave empty and one gets made and saved in the data volume.
+      SIGNING_SECRET: ${SIGNING_SECRET:-}
+      STUN_URLS: ${STUN_URLS:-stun:stun.l.google.com:19302}
+      TURN_URLS: ${TURN_URLS:-}
+      TURN_SECRET: ${TURN_SECRET:-}
+      MAX_SIZE_MB: ${MAX_SIZE_MB:-100}
+    volumes:
+      - chat-data:/data
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost}
+      CONTENT_URL: ${CONTENT_URL:-http://127.0.0.1}
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./public:/srv/public:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  chat-data:
+  caddy-data:
+  caddy-config:
