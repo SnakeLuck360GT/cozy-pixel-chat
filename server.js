@@ -1303,6 +1303,6 @@ if (!db.get("SELECT 1 FROM users LIMIT 1")) {
   console.warn("No accounts yet. Create the owner with: node manage.js add-user <name> --owner");
 }
 
-server.listen(config.port, "127.0.0.1", () => {
-  console.log(`Listening on 127.0.0.1:${config.port}, storing data in ${config.dataDir}`);
+server.listen(config.port, config.host, () => {
+  console.log(`Listening on ${config.host}:${config.port}, storing data in ${config.dataDir}`);
 });
