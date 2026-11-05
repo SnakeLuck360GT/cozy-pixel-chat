@@ -10,30 +10,30 @@
   <img src="https://img.shields.io/badge/license-MIT-e8d5b0?style=flat-square&labelColor=7c4a26" alt="MIT license">
 </p>
 
-![a chat in the farmhouse theme](docs/screenshots/chat.png)
+![Chat in the Farmhouse theme](docs/screenshots/chat.png)
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/themes.png" alt="the theme picker"></td>
-    <td width="50%"><img src="docs/screenshots/server.png" alt="a server in the campfire theme"></td>
+    <td width="50%"><img src="docs/screenshots/themes.png" alt="Theme picker"></td>
+    <td width="50%"><img src="docs/screenshots/server.png" alt="Server in the Campfire theme"></td>
   </tr>
   <tr>
-    <td width="50%"><img src="docs/screenshots/profile.png" alt="a profile card"></td>
-    <td width="50%" align="center"><img src="docs/screenshots/phone.png" alt="on a phone" width="260"></td>
+    <td width="50%"><img src="docs/screenshots/profile.png" alt="Profile card"></td>
+    <td width="50%" align="center"><img src="docs/screenshots/phone.png" alt="Mobile view" width="260"></td>
   </tr>
 </table>
 
-## what's inside
+## Features
 
-- messages that pop up live, with replies, reactions, edits, unsend, @mentions, typing dots, "seen", pins and search
-- photos, videos, files, voice notes and little hand-drawn pixel stickers
-- calls with up to 6 friends, with screen sharing
-- watch youtube together with `/watch <link>`
-- 12 themes (farmhouse, spring, rainy, campfire, café…), with tiny weather drifting by
-- profiles with avatars, banners and badges
-- invite codes only, so it stays just your people
+- Real-time messaging with replies, reactions, edits, unsend, @mentions, typing indicators, read receipts, pins and search
+- Photos, videos, files, voice notes and pixel-art stickers
+- Voice and video calls for up to 6 people, with screen sharing
+- Watch YouTube together with `/watch <link>`
+- 12 themes with animated weather effects
+- Profiles with avatars, banners and badges
+- Invite-only sign-up, with an admin page and roles
 
-## grow your own
+## Getting started
 
 ```sh
 git clone https://github.com/SnakeLuck360GT/cozy-pixel-chat.git
@@ -42,19 +42,22 @@ docker compose up -d
 docker compose exec app chat-admin add-user yourname --owner
 ```
 
-open <http://localhost>, log in with the password it printed, and make yourself a cup of tea.
+Open <http://localhost> and log in with the printed password.
 
-**on a real server:** point two subdomains at it (one for the app, one for files),
-copy `.env.example` to `.env`, fill in `PUBLIC_URL` and `CONTENT_URL`, then
-`docker compose up -d`. caddy sorts out https for you. for calls over mobile
-data, fill in the TURN bits, open UDP/TCP 3478 and UDP 49160-49200, and run
-`docker compose --profile calls up -d`.
+### Production
 
-no docker? `deploy/setup.sh` sets it all up on ubuntu (node, caddy, coturn, systemd).
+1. Point two subdomains at the server (one for the app, one for files).
+2. Copy `.env.example` to `.env` and set `PUBLIC_URL` and `CONTENT_URL`.
+3. Run `docker compose up -d`. Caddy handles HTTPS.
 
-## tinkering
+For calls over mobile networks, set the TURN values in `.env`, open UDP/TCP 3478
+and UDP 49160-49200, and run `docker compose --profile calls up -d`.
 
-needs node 22.13 or newer.
+Without Docker, `deploy/setup.sh` installs everything on Ubuntu (Node, Caddy, coturn, systemd).
+
+## Development
+
+Requires Node 22.13+.
 
 ```sh
 npm install
@@ -63,10 +66,10 @@ PUBLIC_URL=http://localhost:8080 CONTENT_URL=http://localhost:8081 npm start
 node dev/proxy.js   # then open http://localhost:8080
 ```
 
-## how it works
+## How it works
 
-curious about the insides? it's all written up in [docs/how-it-works.md](docs/how-it-works.md)
+See [docs/how-it-works.md](docs/how-it-works.md).
 
-## license
+## License
 
-MIT, so share it around. the fonts (silkscreen, pixelify sans) are OFL, see `public/vendor/`.
+[MIT](LICENSE). Bundled fonts (Silkscreen, Pixelify Sans) are under the SIL Open Font License.
