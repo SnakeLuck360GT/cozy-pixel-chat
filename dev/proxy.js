@@ -4,6 +4,8 @@
 //
 //   PUBLIC_URL=http://localhost:8080 CONTENT_URL=http://localhost:8081 npm start
 //   node dev/proxy.js
+//
+// Other ports: API_PORT (the server's PORT), APP_PORT and FILES_PORT.
 
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
@@ -11,7 +13,9 @@ import http from "node:http";
 import net from "node:net";
 import path from "node:path";
 
-const API = 3002;
+const API = Number(process.env.API_PORT || 3002);
+const APP_PORT = Number(process.env.APP_PORT || 8080);
+const FILES_PORT = Number(process.env.FILES_PORT || 8081);
 const ROOT = path.resolve(import.meta.dirname, "../public");
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".png": "image/png", ".ico": "image/x-icon", ".txt": "text/plain" };
 
@@ -58,5 +62,5 @@ const files = http.createServer((req, res) => {
   res.end("Not found");
 });
 
-app.listen(8080, () => console.log("App on http://localhost:8080"));
-files.listen(8081, () => console.log("Files on http://localhost:8081"));
+app.listen(APP_PORT, () => console.log(`App on http://localhost:${APP_PORT}`));
+files.listen(FILES_PORT, () => console.log(`Files on http://localhost:${FILES_PORT}`));
